@@ -62,7 +62,8 @@ class Game:
         return self
 
     def _is_board_filled(self) -> bool:
-        return all(self.__board)
+        print("CHECK BOARD : " + str(all(self.__board)))
+        return all([i is not None for i in self.__board])
 
     def _is_board_ordered(self) -> bool:
         """ algorithm to validate that the board state is currently in order. the game ends when this returns false """
@@ -71,13 +72,11 @@ class Game:
                 return False
         return True
 
-    def _check_game_over(self) -> bool:
+    def _check_game_over(self):
         if not self._is_board_ordered():
             raise GameOver(in_red("YOU HAVE FAILED, BETTER LUCK NEXT TIME"))
         if self._is_board_filled():
-            raise GameOver()
-
-        return self._is_board_filled() or not self._is_board_ordered()
+            raise GameOver(in_green("YOU HAVE WON! CONGRATS! YOU WIN AT NUMBERS!"))
 
     def place_current_number(self, index: int):
         """ place the current number on the board and change the current to default to indicate it's processed """
@@ -93,7 +92,7 @@ class Game:
 
     def print_board(self):
         """ print out a nice copy of the board to look at """
-        print() # blank line before board
+        print()  # blank line before board
         for index, value in enumerate(self.__board):
             print(f'{in_magenta(str(index))}:{value or "___"} ', end=" ")
         print()  # add the newline
@@ -161,6 +160,11 @@ def in_magenta(text):
 def in_blue(text):
     """ Use a cool library I found to turn some text blue """
     return colorama.Fore.BLUE + str(text) + colorama.Fore.RESET
+
+
+def in_green(text):
+    """ Use a cool library I found to turn some text green """
+    return colorama.Fore.GREEN + str(text) + colorama.Fore.RESET
 
 
 def prompt(message: str = in_blue("YOU MUST CHOOSE"), default: int = None) -> int:
