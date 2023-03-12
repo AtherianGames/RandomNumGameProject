@@ -192,8 +192,7 @@ def run_game(game: Game):
             print_game_over(e)
             break
         except GameStateException as e:
-            print(in_red(f'GameStateException: {e}'))
-            print(in_red('Try Again'))
+            print(in_red(f'\nGameStateException: {e}\nTry Again'))
 
     print_main_menu()
 
