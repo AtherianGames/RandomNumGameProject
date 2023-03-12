@@ -62,7 +62,7 @@ class Game:
         return self
 
     def _is_board_filled(self) -> bool:
-        print("CHECK BOARD : " + str(all(self.__board)))
+        """ return true if all the board indices have been filled """
         return all([i is not None for i in self.__board])
 
     def _is_board_ordered(self) -> bool:
@@ -73,6 +73,7 @@ class Game:
         return True
 
     def _check_game_over(self):
+        """ raise exceptions to indicate GameOver if certain conditions have been met"""
         if not self._is_board_ordered():
             raise GameOver(in_red("YOU HAVE FAILED, BETTER LUCK NEXT TIME"))
         if self._is_board_filled():
@@ -185,6 +186,8 @@ def print_game_over(message: str):
 
 
 def run_game(game: Game):
+    """ basic game loop for user input. this is done outside the Game class so a framework for automated solutions
+    can be overloaded. This should be able to run multiple times on the same game instance without issue """
     game.reset_game()
     while True:
         try:
@@ -205,8 +208,7 @@ def start_new_game():
     """ prompt the user for game configurations and kick off a new round """
     game = Game() \
         .set_random_range(prompt(message="Pick a really big number like", default=1000)) \
-        .set_board_size(prompt(message="Now pick a really small number", default=10)) \
-        .reset_game()
+        .set_board_size(prompt(message="Now pick a really small number", default=10))
     run_game(game)
 
 
