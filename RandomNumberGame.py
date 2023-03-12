@@ -19,6 +19,7 @@ class GameStateException(Exception):
     """Raised when an action would cause an invalid game state"""
     pass
 
+
 class GameOver(Exception):
     """ An easy way to pass a game over message to the game handler """
     pass
@@ -37,12 +38,10 @@ class Game:
     """
 
     _DEFAULT_VALUE = None
-
     __range: (int, int)
     __board: tuple
     __board_size: int
     __random_numbers: list[int]
-
     __current_number: int = _DEFAULT_VALUE
 
     def set_random_range(self, max_value: int):
@@ -200,7 +199,6 @@ def run_game(game: Game):
             break
         except GameStateException as e:
             print(in_red(f'\nGameStateException: {e}\nTry Again'))
-
     print_main_menu()
 
 
