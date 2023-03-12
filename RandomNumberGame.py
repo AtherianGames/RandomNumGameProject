@@ -107,7 +107,8 @@ class Game:
 
     def get_random_number(self):
         """ load the next pre-generated random number and return the value """
-        self.__current_number = self.__random_numbers.pop()
+        if self.__current_number is None:
+            self.__current_number = self.__random_numbers.pop()
         return self.__current_number
 
     def cheat(self):
@@ -146,15 +147,16 @@ def pairwise(values: iter):
         if last is not None and current is not None:
             yield last, current
 
+
 def in_red(text):
     """ Use a cool library I found to turn some text red """
     return colorama.Fore.RED + str(text) + colorama.Fore.RESET
 
 
-
 def in_magenta(text):
     """ Use a cool library I found to turn some text magenta """
     return colorama.Fore.MAGENTA + str(text) + colorama.Fore.RESET
+
 
 def in_blue(text):
     """ Use a cool library I found to turn some text blue """
@@ -175,8 +177,7 @@ def print_menu(menu_options: list[MenuOption]):
 
 
 def print_game_over(message: str):
-    art.tprint("GAME OVER")
-    print(message)
+    print(f"\nGAME OVER: {message}")
 
 
 def run_game(game: Game):
@@ -208,6 +209,7 @@ def start_new_game():
 
 def print_main_menu():
     """ print some flashy graphics and launch into the menu system """
+    print('\n')  # give a little space to the banner
     art.tprint("I WANT TO PLAY A GAME")
     print_menu([
         MenuOption(text="HELL YEAH, LETS DO THIS!!!", callback=start_new_game),
