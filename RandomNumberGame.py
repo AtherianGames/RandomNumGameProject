@@ -9,6 +9,7 @@ import art
 import colorama
 import itertools
 from enum import Enum
+import os
 
 MenuOption = namedtuple("Option", "text, callback")
 Menu = namedtuple("menu", "title, menu_options")
@@ -67,11 +68,10 @@ class Game:
         """ algorithm to validate that the board state is currently in order. the game ends when this returns false """
         for first, second in pairwise(filter(lambda x: x is not None, self.__board)):
             if first > second:
-                print("FAILURE")
                 return False
         return True
 
-    def game_over(self) -> bool:
+    def _check_game_over(self) -> bool:
         if not self._is_board_ordered():
             raise GameOver(in_red("YOU HAVE FAILED, BETTER LUCK NEXT TIME"))
         if self._is_board_filled():
@@ -81,12 +81,19 @@ class Game:
 
     def place_current_number(self, index: int):
         """ place the current number on the board and change the current to default to indicate it's processed """
-        self.__board[index] = self.__current_number
-        self.__current_number = self._DEFAULT_VALUE
-        return self
+        try:
+            if self.__board[index] is not None:
+                raise GameStateException("Chosen board index is already occupied")
+            self.__board[index] = self.__current_number
+            self.__current_number = self._DEFAULT_VALUE
+            self._check_game_over()
+            return self
+        except IndexError as e:
+            raise GameStateException("Chosen number was outside the list range")
 
     def print_board(self):
         """ print out a nice copy of the board to look at """
+        print() # blank line before board
         for index, value in enumerate(self.__board):
             print(f'{in_magenta(str(index))}:{value or "___"} ', end=" ")
         print()  # add the newline
@@ -100,8 +107,6 @@ class Game:
 
     def get_random_number(self):
         """ load the next pre-generated random number and return the value """
-        if self.__current_number:
-            raise GameStateException("Current number must be consumed before the next can be provided")
         self.__current_number = self.__random_numbers.pop()
         return self.__current_number
 
@@ -143,15 +148,20 @@ def pairwise(values: iter):
 
 def in_red(text):
     """ Use a cool library I found to turn some text red """
-    return colorama.Fore.RED + text + colorama.Fore.RESET
+    return colorama.Fore.RED + str(text) + colorama.Fore.RESET
+
 
 
 def in_magenta(text):
     """ Use a cool library I found to turn some text magenta """
-    return colorama.Fore.MAGENTA + text + colorama.Fore.RESET
+    return colorama.Fore.MAGENTA + str(text) + colorama.Fore.RESET
+
+def in_blue(text):
+    """ Use a cool library I found to turn some text blue """
+    return colorama.Fore.BLUE + str(text) + colorama.Fore.RESET
 
 
-def prompt(message: str = in_red("YOU MUST CHOOSE"), default: int = None) -> int:
+def prompt(message: str = in_blue("YOU MUST CHOOSE"), default: int = None) -> int:
     """ This overload of the prompt method will print a custom message """
     default_string = f' (default {default})' if default else ""
     return int(input(f'{message}{default_string}: ') or default)
@@ -164,14 +174,26 @@ def print_menu(menu_options: list[MenuOption]):
     menu_options[prompt() - 1].callback()
 
 
+def print_game_over(message: str):
+    art.tprint("GAME OVER")
+    print(message)
+
+
 def run_game(game: Game):
     game.reset_game()
-    while not game.game_over():
-        next_number = game.get_random_number()
-        game.print_board()
-        index = prompt(f'{in_red("PLACE YOUR NUMBER:")} {next_number}')
-        game.place_current_number(index)
-    print("GAME OVER")
+    while True:
+        try:
+            next_number = game.get_random_number()
+            game.print_board()
+            index = prompt(f'{in_blue("PLACE YOUR NUMBER:")} {next_number}')
+            game.place_current_number(index)
+        except GameOver as e:
+            print_game_over(e)
+            break
+        except GameStateException as e:
+            print(in_red(f'GameStateException: {e}'))
+            print(in_red('Try Again'))
+
     print_main_menu()
 
 
