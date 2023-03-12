@@ -20,9 +20,17 @@ class GameStateException(Exception):
     pass
 
 
+class Outcome(Enum):
+    """ used for tracking exceptions explicitely """
+    WIN = 1,
+    LOSE = 0
+
+
 class GameOver(Exception):
     """ An easy way to pass a game over message to the game handler """
-    pass
+    def __init__(self, outcome: Outcome, message: str):
+        self.message = message
+        self.outcome = outcome
 
 
 class Game:
@@ -74,9 +82,9 @@ class Game:
     def _check_game_over(self):
         """ raise exceptions to indicate GameOver if certain conditions have been met"""
         if not self._is_board_ordered():
-            raise GameOver(in_red("YOU HAVE FAILED, BETTER LUCK NEXT TIME"))
+            raise GameOver(Outcome.LOSE, in_red("YOU HAVE FAILED, BETTER LUCK NEXT TIME"))
         if self._is_board_filled():
-            raise GameOver(in_green("YOU HAVE WON! CONGRATS! YOU WIN AT NUMBERS!"))
+            raise GameOver(Outcome.WIN, in_green("YOU HAVE WON! CONGRATS! YOU WIN AT NUMBERS!"))
 
     def place_current_number(self, index: int):
         """ place the current number on the board and change the current to default to indicate it's processed """
@@ -195,7 +203,7 @@ def run_game(game: Game):
             index = prompt(f'{in_blue("PLACE YOUR NUMBER:")} {next_number}')
             game.place_current_number(index)
         except GameOver as e:
-            print_game_over(e)
+            print_game_over(e.message)
             break
         except GameStateException as e:
             print(in_red(f'\nGameStateException: {e}\nTry Again'))
