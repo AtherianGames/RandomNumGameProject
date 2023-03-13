@@ -85,9 +85,9 @@ class Game:
 
     def place_current_number(self, index: int):
         """ place the current number on the board and change the current to default to indicate it's processed """
+        if self.__board[index] is not None:
+            raise GameStateException("Chosen board index is already occupied")
         try:
-            if self.__board[index] is not None:
-                raise GameStateException("Chosen board index is already occupied")
             self.__board[index] = self.__current_number
             self.__current_number = None
             self._check_game_over()
