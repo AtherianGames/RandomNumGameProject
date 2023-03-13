@@ -1,10 +1,9 @@
 # OK, WE'RE MAKING A GAME
 #
-import array
-import dataclasses
+import random
 from collections import namedtuple
 from enum import Enum
-import random
+
 import art
 import colorama
 
