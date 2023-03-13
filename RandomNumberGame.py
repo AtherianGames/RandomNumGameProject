@@ -3,11 +3,10 @@
 import array
 import dataclasses
 from collections import namedtuple
+from enum import Enum
 import random
-
 import art
 import colorama
-from enum import Enum
 
 MenuOption = namedtuple("Option", "text, callback")
 Menu = namedtuple("menu", "title, menu_options")
@@ -19,7 +18,7 @@ class GameStateException(Exception):
 
 
 class Outcome(Enum):
-    """ used for tracking exceptions explicitely """
+    """ used for tracking exceptions explicitly """
     WIN = 1,
     LOSE = 0
 
@@ -102,12 +101,6 @@ class Game:
             print(f'{in_magenta(str(index))}:{value or "___"} ', end=" ")
         print()  # add the newline
         return self
-
-    def prompt_next_move(self):
-        """ displays the current state and prompts the user for the next move """
-        self.print_board()
-        index = prompt(f'{in_red("PLACE YOUR NUMBER:")} {self.__current_number}')
-        self.place_current_number(index)
 
     def get_random_number(self):
         """ load the next pre-generated random number and return the value """
