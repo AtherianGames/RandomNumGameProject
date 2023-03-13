@@ -7,9 +7,7 @@ import random
 
 import art
 import colorama
-import itertools
 from enum import Enum
-import os
 
 MenuOption = namedtuple("Option", "text, callback")
 Menu = namedtuple("menu", "title, menu_options")
@@ -45,12 +43,11 @@ class Game:
     https://en.wikipedia.org/wiki/Method_cascading
     """
 
-    _DEFAULT_VALUE = None
     __range: (int, int)
     __board: tuple
     __board_size: int
     __random_numbers: list[int]
-    __current_number: int = _DEFAULT_VALUE
+    __current_number: int = None
 
     def set_random_range(self, max_value: int):
         """ we're allowing for non-zero minimums. Dunno why """
@@ -64,7 +61,7 @@ class Game:
 
     def reset_game(self):
         """ reset the board using the current game configuration """
-        self.__board = ([self._DEFAULT_VALUE] * self.__board_size)
+        self.__board = ([None] * self.__board_size)
         self._generate_random_numbers()
         return self
 
@@ -92,7 +89,7 @@ class Game:
             if self.__board[index] is not None:
                 raise GameStateException("Chosen board index is already occupied")
             self.__board[index] = self.__current_number
-            self.__current_number = self._DEFAULT_VALUE
+            self.__current_number = None
             self._check_game_over()
             return self
         except IndexError as e:
