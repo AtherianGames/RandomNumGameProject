@@ -41,25 +41,16 @@ class Game:
     https://en.wikipedia.org/wiki/Method_cascading
     """
 
-    __range: (int, int)
+    range: (int, int)
+    board_size: int
+
     __board: tuple
-    __board_size: int
     __random_numbers: list[int]
     __current_number: int = None
 
-    def set_random_range(self, max_value: int):
-        """ we're allowing for non-zero minimums. Dunno why """
-        self.__range = (0, max_value)
-        return self
-
-    def set_board_size(self, new_size: int):
-        """ set the number of spaces in the board to place numbers """
-        self.__board_size = new_size
-        return self
-
     def reset_game(self):
         """ reset the board using the current game configuration """
-        self.__board = ([None] * self.__board_size)
+        self.__board = ([None] * self.board_size)
         self._generate_random_numbers()
         return self
 
@@ -97,7 +88,7 @@ class Game:
         """ print out a nice copy of the board to look at """
         print()  # blank line before board
         for index, value in enumerate(self.__board):
-            print(f'{in_magenta(str(index))}:{value or "___"} ', end=" ")
+            print(f'{in_magenta(str(index))}: {value if value is not None else "___"} ', end=" ")
         print()  # add the newline
         return self
 
@@ -128,7 +119,7 @@ class Game:
 
                     Learn More: https://www.tutorialspoint.com/functional_programming/functional_programming_lazy_evaluation.htm
         """
-        self.__random_numbers = random.sample(range(*self.__range), self.__board_size)
+        self.__random_numbers = random.sample(range(*self.range), self.board_size)
 
 
 def pairwise(values: iter):
@@ -201,11 +192,10 @@ def run_game(game: Game):
 
 def start_new_game():
     """ prompt the user for game configurations and kick off a new round """
-    game = Game() \
-        .set_random_range(prompt(message="Pick a really big number like", default=1000)) \
-        .set_board_size(prompt(message="Now pick a really small number", default=10))
+    game = Game()
+    game.range = 0, prompt(message="Pick a really big number like", default=1000)
+    game.board_size = prompt(message="Now pick a really small number", default=10)
     run_game(game)
-
 
 def print_main_menu():
     """ print some flashy graphics and launch into the menu system """
