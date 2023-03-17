@@ -74,15 +74,15 @@ class Game:
 
     def place_current_number(self, index: int):
         """ place the current number on the board and change the current to default to indicate it's processed """
+        if index not in range(0, self.board_size-1):
+            raise GameStateException("Chosen number was outside the list range")
         if self.__board[index] is not None:
             raise GameStateException("Chosen board index is already occupied")
-        try:
-            self.__board[index] = self.__current_number
-            self.__current_number = None
-            self._check_game_over()
-            return self
-        except IndexError as e:
-            raise GameStateException("Chosen number was outside the list range")
+
+        self.__board[index] = self.__current_number
+        self.__current_number = None
+        self._check_game_over()
+        return self
 
     def print_board(self):
         """ print out a nice copy of the board to look at """
@@ -133,7 +133,6 @@ def pairwise(values: iter):
         current = index
         if last is not None and current is not None:
             yield last, current
-
 
 def in_red(text):
     """ Use a cool library I found to turn some text red """
