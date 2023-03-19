@@ -1,11 +1,14 @@
 # OK, WE'RE MAKING A GAME
 #
+import dataclasses
 import random
 from collections import namedtuple
 from enum import Enum
 
 import art
 import colorama
+
+import inspect
 
 MenuOption = namedtuple("Option", "text, callback")
 Menu = namedtuple("menu", "title, menu_options")
@@ -44,13 +47,13 @@ class Game:
     range: (int, int)
     board_size: int
 
-    __board: tuple
+    __board: list[int]
     __random_numbers: list[int]
     __current_number: int = None
 
     def reset_game(self):
         """ reset the board using the current game configuration """
-        self.__board = ([None] * self.board_size)
+        self.__board = [None] * self.board_size
         self._generate_random_numbers()
         return self
 
@@ -74,7 +77,7 @@ class Game:
 
     def place_current_number(self, index: int):
         """ place the current number on the board and change the current to default to indicate it's processed """
-        if index not in range(0, self.board_size-1):
+        if index not in range(0, self.board_size):
             raise GameStateException("Chosen number was outside the list range")
         if self.__board[index] is not None:
             raise GameStateException("Chosen board index is already occupied")
@@ -131,8 +134,9 @@ def pairwise(values: iter):
     for index in values:
         last = current
         current = index
-        if last is not None and current is not None:
+        if last is not None:
             yield last, current
+
 
 def in_red(text):
     """ Use a cool library I found to turn some text red """
@@ -186,7 +190,6 @@ def run_game(game: Game):
             break
         except GameStateException as e:
             print(in_red(f'\nGameStateException: {e}\nTry Again'))
-    print_main_menu()
 
 
 def start_new_game():
@@ -196,16 +199,19 @@ def start_new_game():
     game.board_size = prompt(message="Now pick a really small number", default=10)
     run_game(game)
 
+
 def print_main_menu():
     """ print some flashy graphics and launch into the menu system """
-    print('\n')  # give a little space to the banner
-    art.tprint("I WANT TO PLAY A GAME")
-    print_menu([
-        MenuOption(text="HELL YEAH, LETS DO THIS!!!", callback=start_new_game),
-        MenuOption(text="Sure, that sounds like fun", callback=start_new_game),
-        MenuOption(text="Eh, ok", callback=start_new_game),
-        MenuOption(text="No Thanks", callback=exit)
-    ])
+    while True:
+        print('\n')  # give a little space to the banner
+        art.tprint("I WANT TO PLAY A GAME")
+        print(f'stack_depth: {len(inspect.stack())}')
+        print_menu([
+            MenuOption(text="HELL YEAH, LETS DO THIS!!!", callback=start_new_game),
+            MenuOption(text="Sure, that sounds like fun", callback=start_new_game),
+            MenuOption(text="Eh, ok", callback=start_new_game),
+            MenuOption(text="No Thanks", callback=exit)
+        ])
 
 
 def __init__():
